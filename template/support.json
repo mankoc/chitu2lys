@@ -1,0 +1,89 @@
+{
+ "isBaseTip": false,
+ "objectIdTip": "o1",
+ "tipNormal": {
+  "x": 0,
+  "y": 0,
+  "z": -1
+ },
+ "newTipNormal": null,
+ "settings": {
+  "isStraight": false,
+  "adaptiveBase": false,
+  "mid": {
+   "type": "cube"
+  },
+  "baseTip": {
+   "type": "cone",
+   "pointDiameter": 0.6,
+   "penetration": 0,
+   "diameter": 1,
+   "length": 3,
+   "breakPoint": 0,
+   "angle": 100,
+   "isStraight": true
+  },
+  "pro": false,
+  "extra": {
+   "tipDiameter2": 1,
+   "baseDiameter2": 6,
+   "baseTipDiameter2": 1,
+   "baseJoinDiameter2": 1,
+   "baseTipPointDiameter2": 0.3,
+   "tipPointDiameter2": 0.3
+  },
+  "style": "resin",
+  "base": {
+   "type": "cylinder",
+   "diameter": 6,
+   "length": 0.5,
+   "angle": 45,
+   "joinDiameter": 1,
+   "joinLength": 0.5,
+   "joinCone": 0.75,
+   "newJoinLength": 10
+  },
+  "tip": {
+   "type": "cone",
+   "pointDiameter": 0.3,
+   "penetration": 0,
+   "diameter": 1,
+   "length": 3,
+   "breakPoint": 0,
+   "angle": 100
+  },
+  "multiMidsInteractive": false
+ },
+ "collisionIsAccepted": false,
+ "parentId": [],
+ "isVisible": true,
+ "gridNodeIndex": null,
+ "objectIdBase": "o1",
+ "parentTipId": null,
+ "updatedAt": 1791797238813,
+ "base": {
+  "x": 5.796537141272032,
+  "y": 1.3343848029526144,
+  "z": 0
+ },
+ "isInFill": false,
+ "parentBaseId": null,
+ "isCollidingWithObject": false,
+ "vertical": false,
+ "mini": false,
+ "baseNormal": {
+  "x": 0,
+  "y": 0,
+  "z": 1
+ },
+ "tags": [],
+ "straight": false,
+ "type": 1,
+ "tip": {
+  "x": 1.7216851711273216,
+  "y": -0.6715635061264035,
+  "z": -5.000000000000001
+ },
+ "id": "s1",
+ "group": true
+}

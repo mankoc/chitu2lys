@@ -1,0 +1,175 @@
+{
+ "isOnScene": true,
+ "hasSuctionCup": false,
+ "autoHoles": {
+  "numberOfHolesByPockets": 3,
+  "holesDiameter": 2,
+  "holesSpacing": 5
+ },
+ "supportMirrorWorld": false,
+ "loaded": true,
+ "hasMinima": true,
+ "formerCenter": {
+  "x": 0,
+  "y": 0,
+  "z": 0,
+  "updatedAt": 1791797087310
+ },
+ "isDuplicateFromId": null,
+ "dimension": {
+  "x": 10,
+  "y": 10,
+  "z": 10
+ },
+ "formerDifferentFromCenter": false,
+ "restrictions": {
+  "proSlicingOnly": false,
+  "no3dExportable": false
+ },
+ "needUpdateSuctionCup": true,
+ "hollowBlockers": [],
+ "position": {
+  "x": -18.29013726406007,
+  "y": 2.5901308468697195,
+  "z": 10.676572601950376
+ },
+ "updatedHollowVoxelsAt": 1791797087489,
+ "isHole": false,
+ "scale": {
+  "x": 1,
+  "y": 1,
+  "z": 1
+ },
+ "isSupportGrid": false,
+ "booleanMode": "none",
+ "name": "",
+ "hasHollowing2D": true,
+ "supportsGridGap": 5,
+ "isCopiedObject": false,
+ "repair": {
+  "revertNormal": false,
+  "computeNormal": false,
+  "fillHoles": false,
+  "needModal": false,
+  "fillHoleParameters": {
+   "deleteIsolatedSurfaces": false,
+   "isolatedSurfaceThreshold": 1.5,
+   "reverseMisorientedSurfaces": true,
+   "deleteInvisibleSurfaces": true,
+   "fillHoles": true,
+   "nmaxPass": 16,
+   "maxGroupsCount": 512,
+   "updatedAt": 0
+  },
+  "repairStats": {
+   "invalidFacesCount": 0,
+   "duplicatedFacesCount": 0,
+   "invisibleFacesCount": 0,
+   "deletedFacesCount": 0,
+   "reorientedFacesCount": 0,
+   "closedHolesCount": 0,
+   "borderEdgesSolvedCount": 0,
+   "nonManifoldEdgesSolvedCount": 0,
+   "nonOrientableEdgesSolvedCount": 0
+  },
+  "updatedAt": 1791797087505
+ },
+ "supportMirror": "",
+ "plateId": "pl0",
+ "visible": true,
+ "note": {
+  "text": "",
+  "owner": "",
+  "pseudo": "",
+  "passkey": "",
+  "locked": false
+ },
+ "hollowing": {
+  "enabled": true,
+  "pocketDetectionMinPocketVoxels": 0.01,
+  "showNotification": null,
+  "infillInterval": 5,
+  "updatedAt": 1791797087246,
+  "pocketDetection": false,
+  "pocketDetectionMinPocketSide": 0.01,
+  "wallPrecision": 1,
+  "useVoxels": true,
+  "pocketDetectionRemoveBelowHoles": true,
+  "wallSmooth": 0.1,
+  "infillEnabled": false,
+  "pocketDetectionWithoutHoles": false,
+  "outer": 2.5
+ },
+ "foundation": {
+  "size": 1,
+  "enabled": true,
+  "zLimit": 0,
+  "scale": 100,
+  "wall": 1,
+  "pro": false,
+  "visible": true,
+  "angle": 200,
+  "concavity": 10,
+  "extraWall": 1,
+  "type": "vectorielWall",
+  "precision": 0.5,
+  "baseSupport": true,
+  "isScalable": true
+ },
+ "properties": {
+  "size": 0,
+  "lyId": "o1",
+  "relative": "",
+  "hash": "",
+  "updatedAt": 0,
+  "watch": false,
+  "lyPath": null,
+  "isMngo": true,
+  "absolute": "",
+  "file": ""
+ },
+ "holes": [],
+ "initialized": true,
+ "center": {
+  "x": 0,
+  "y": 0,
+  "z": 0,
+  "updatedAt": 1791797087310
+ },
+ "supportsBase": [],
+ "updatedHollowBlockersAt": 0,
+ "supportGridGapValidate": true,
+ "supportsTip": [],
+ "type": "file",
+ "library": {
+  "libGeoUuid": "",
+  "libGeoRenderState": "dataless",
+  "libGeoDataLess": {
+   "width": 10,
+   "height": 10,
+   "depth": 10
+  },
+  "libGeoEtag": ""
+ },
+ "id": "o1",
+ "isOperationObject": false,
+ "rotation": {
+  "x": 14.366204834694674,
+  "y": -33.413467713512375,
+  "z": -8.028248792256198
+ },
+ "stats": {
+  "numHoles": 0,
+  "hasStructuralErrors": false,
+  "manifold": true,
+  "polyCount": 670566,
+  "vertexCount": 335261,
+  "analyzeStats": {
+   "numHoles": 0,
+   "isManifold": true,
+   "borderCount": 0,
+   "nonManifoldsCount": 0,
+   "nonOrientablesCount": 0
+  }
+ }
+}

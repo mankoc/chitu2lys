@@ -1,0 +1,6 @@
+target/
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db

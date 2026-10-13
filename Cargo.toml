@@ -1,0 +1,34 @@
+[package]
+name = "chitu2lys"
+description = "Converts CHITUBOX projects (.chitubox) into Lychee Slicer scenes (.lys)"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "CC-BY-NC-SA-4.0"
+publish = false
+
+[[bin]]
+name = "chitu2lys"
+path = "src/main.rs"
+
+[[bin]]
+name = "chitu2lys-gui"
+path = "src/gui.rs"
+
+[dependencies]
+eframe = { version = "0.32.3", default-features = false, features = ["wgpu", "default_fonts", "wayland", "x11"] }
+glam = "0.34.1"
+image = { version = "0.25.9", default-features = false, features = ["png"] }
+rayon = "1.12.0"
+rfd = "0.17.2"
+rmpv = "1.3.1"
+serde_json = "1.0.151"
+# eframe draws with wgpu but enables no graphics backend itself; wgpu's defaults (DX12, Vulkan, Metal, OpenGL) do
+wgpu = "=25.0.2"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+
+[profile.dev.package."*"]
+opt-level = 2  # dependencies optimised even in debug builds: big projects stay quick to convert while developing
