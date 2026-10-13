@@ -2,6 +2,10 @@
 
 Converts a CHITUBOX project (`.chitubox`) into a Lychee Slicer scene (`.lys`).
 
+This is a clean-room implementation of a converter from CHITUBOX to Lychee: it is written from the observed file
+formats alone, without using any code from CHITUBOX or Lychee Slicer. It is an independent project, not affiliated
+with or endorsed by either.
+
 ```text
 chitu2lys <project.chitubox> [scene.lys] [--template settings.lys] [--no-braces]
 ```
