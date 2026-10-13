@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: windows-x64
+            ext: .exe
+          - os: ubuntu-latest
+            name: linux-x64
+            ext: ""
+          - os: macos-latest
+            name: macos-arm64
+            ext: ""
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build
+        run: cargo build --release --locked
+      - name: Package
+        shell: bash
+        run: |
+          mkdir dist
+          cp target/release/chitu2lys${{ matrix.ext }} target/release/chitu2lys-gui${{ matrix.ext }} dist/
+          cd dist
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            7z a ../chitu2lys-${{ github.event.release.tag_name }}-${{ matrix.name }}.zip .
+          else
+            zip -r ../chitu2lys-${{ github.event.release.tag_name }}-${{ matrix.name }}.zip .
+          fi
+      - name: Upload to release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" chitu2lys-*.zip --clobber
