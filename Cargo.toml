@@ -1,7 +1,7 @@
 [package]
 name = "chitu2lys"
-description = "Converts CHITUBOX projects (.chitubox) into Lychee Slicer scenes (.lys)"
-version = "0.2.0"
+description = "Converts CHITUBOX projects (.chitubox, .ctp) into Lychee Slicer scenes (.lys)"
+version = "0.3.0"
 edition = "2024"
 rust-version = "1.85"
 license = "CC-BY-NC-SA-4.0"

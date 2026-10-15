@@ -1,7 +1,7 @@
 //! chitu2lys-gui: a small window around the converter. Drop or pick CHITUBOX projects, choose where the Lychee
 //! scenes go and (optionally) a printer template, and convert; the work runs in the background.
 //!
-//!     chitu2lys-gui [projects.chitubox...]
+//!     chitu2lys-gui [projects.chitubox or .ctp...]
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // no console window in release builds
 
@@ -58,10 +58,11 @@ struct Converter {
 }
 
 impl Converter {
-    /// Add projects (anything that is not a `.chitubox` file is ignored, as are files already listed).
+    /// Add projects (anything that is not a `.chitubox` or `.ctp` file is ignored, as are files already listed).
     fn add(&mut self, paths: impl IntoIterator<Item = PathBuf>) {
         for path in paths {
-            let is_project = path.extension().is_some_and(|e| e.eq_ignore_ascii_case("chitubox"));
+            let is_project =
+                path.extension().is_some_and(|e| e.eq_ignore_ascii_case("chitubox") || e.eq_ignore_ascii_case("ctp"));
             if is_project && !self.files.iter().any(|(p, _)| *p == path) {
                 self.files.push((path, State::Waiting));
             }
@@ -245,7 +246,8 @@ impl eframe::App for Converter {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.horizontal(|ui| {
                 if ui.add_enabled(!busy, egui::Button::new("Add projects…")).clicked() {
-                    let picked = rfd::FileDialog::new().add_filter("CHITUBOX project", &["chitubox"]).pick_files();
+                    let picked =
+                        rfd::FileDialog::new().add_filter("CHITUBOX project", &["chitubox", "ctp"]).pick_files();
                     self.add(picked.unwrap_or_default());
                 }
                 if ui.add_enabled(!busy && !self.files.is_empty(), egui::Button::new("Clear list")).clicked() {
@@ -255,7 +257,7 @@ impl eframe::App for Converter {
             ui.separator();
             if self.files.is_empty() {
                 ui.centered_and_justified(|ui| {
-                    ui.weak("Drop .chitubox files here, or use Add projects…");
+                    ui.weak("Drop .chitubox or .ctp files here, or use Add projects…");
                 });
                 return;
             }

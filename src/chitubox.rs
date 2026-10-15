@@ -54,10 +54,51 @@ pub struct Object {
     pub y: f64,
     /// Gap between the plate and the model's lowest point.
     pub lift: f64,
-    /// Byte range of the model's triangles (read them with [`mesh`]); the model is centred on the origin.
-    pub model: (usize, usize),
+    /// Where the model's mesh is in the file (read it with [`Model::mesh`]); the model is centred on the origin.
+    pub model: Model,
     /// The parts of its supports (none without supports, or when the part list cannot be read).
     pub parts: Vec<Part>,
+}
+
+/// Where an object's mesh is in the file.
+pub enum Model {
+    /// `.chitubox` projects: the byte range of triangles of three f32 corners each.
+    Triangles((usize, usize)),
+    /// `.ctp` projects: the byte ranges of the vertices (3 × f32) and of the triangle indices (3 × u32).
+    Indexed { vertices: (usize, usize), indices: (usize, usize) },
+}
+
+impl Model {
+    /// The mesh.
+    pub fn mesh(&self, data: &[u8]) -> Mesh {
+        match *self {
+            Self::Triangles(range) => mesh(data, range),
+            Self::Indexed { vertices: (v, vn), indices: (i, n) } => {
+                let float = |b: &[u8]| f32::from_le_bytes(b.try_into().unwrap());
+                let index = |b: &[u8]| u32::from_le_bytes(b.try_into().unwrap());
+                let vertices: Vec<[f32; 3]> = data[v..v + vn]
+                    .par_chunks_exact(12)
+                    .map(|c| [float(&c[0..4]), float(&c[4..8]), float(&c[8..12])])
+                    .collect();
+                let count = vertices.len() as u32;
+                let faces = data[i..i + n]
+                    .par_chunks_exact(12)
+                    .map(|c| [index(&c[0..4]), index(&c[4..8]), index(&c[8..12])])
+                    .filter(|f| f.iter().all(|&v| v < count))
+                    .collect();
+                Mesh::new(vertices, faces)
+            }
+        }
+    }
+
+    /// The bytes that identify the mesh: its triangles, or its vertices.
+    pub fn bytes<'a>(&self, data: &'a [u8]) -> &'a [u8] {
+        match *self {
+            Self::Triangles((offset, size)) | Self::Indexed { vertices: (offset, size), .. } => {
+                &data[offset..offset + size]
+            }
+        }
+    }
 }
 
 /// One support part: a tip, column, brace, joint, foot cone or foot pad (`CHITUBOX_FILE_FORMAT.md`, 6.5).
@@ -74,7 +115,7 @@ pub struct Part {
     pub size_b: f64,
     /// For tips: how deep `a` lies inside the model.
     pub depth_a: f64,
-    /// Byte range of this part's triangles (read them with [`mesh`]).
+    /// Byte range of this part's triangles (read them with [`mesh`]; empty in `.ctp` projects).
     pub mesh: (usize, usize),
 }
 
@@ -119,7 +160,7 @@ impl Object {
         if ![x, y, lift].iter().all(|v| v.is_finite()) {
             return Err("its position is not a number".into());
         }
-        Ok(Self { name, x, y, lift, model, parts })
+        Ok(Self { name, x, y, lift, model: Model::Triangles(model), parts })
     }
 }
 
@@ -167,7 +208,12 @@ pub fn preview(data: &[u8]) -> Option<(u32, u32, Vec<u8>)> {
     }
     let (width, height) = (word(data, header)?, word(data, header + 4)?);
     let (offset, size) = (word(data, header + 8)? as usize, word(data, header + 12)? as usize);
-    let encoded = data.get(offset..offset.checked_add(size)?)?;
+    decode_preview(data.get(offset..offset.checked_add(size)?)?, width, height)
+}
+
+/// A preview image of `width × height` pixels from its 15-bit run-length encoding (`CHITUBOX_FILE_FORMAT.md`,
+/// section 4.2), as RGB pixels row by row.
+pub fn decode_preview(encoded: &[u8], width: u32, height: u32) -> Option<(u32, u32, Vec<u8>)> {
     let pixels = (width as usize).checked_mul(height as usize)?;
     let mut rgb = Vec::with_capacity(pixels * 3);
     let mut words = encoded.chunks_exact(2).map(|w| u16::from_le_bytes([w[0], w[1]]));
@@ -276,7 +322,7 @@ mod tests {
         assert!(skipped.is_empty());
         let object = &objects[0];
         assert_eq!((object.name.as_str(), object.x, object.y, object.lift), ("thing", 10.0, -5.0, 3.0));
-        assert_eq!(mesh(&data, object.model).faces.len(), 1);
+        assert_eq!(object.model.mesh(&data).faces.len(), 1);
         assert_eq!(object.parts.iter().map(|p| p.kind).collect::<Vec<_>>(), [1, 3]);
         assert_eq!(mesh(&data, object.parts[1].mesh).faces.len(), 1);
     }

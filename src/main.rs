@@ -1,6 +1,6 @@
-//! chitu2lys: converts a CHITUBOX project (`.chitubox`) into a Lychee Slicer scene (`.lys`).
+//! chitu2lys: converts a CHITUBOX project (`.chitubox` or `.ctp`) into a Lychee Slicer scene (`.lys`).
 //!
-//!     chitu2lys <project.chitubox> [scene.lys] [--template settings.lys] [--no-braces]
+//!     chitu2lys <project.chitubox|project.ctp> [scene.lys] [--template settings.lys] [--no-braces]
 //!
 //! Every model keeps its place on the plate and its lift. CHITUBOX's support trees become editable Lychee supports
 //! along the same paths: a support carrying each tree (on its foot, on the model, or on the tree it leans on), a
@@ -65,7 +65,7 @@ fn main() {
 
 /// Print the usage and exit with `code`.
 fn usage(code: i32) -> ! {
-    eprintln!("usage: chitu2lys <project.chitubox> [scene.lys] [--template settings.lys] [--no-braces]");
+    eprintln!("usage: chitu2lys <project.chitubox|project.ctp> [scene.lys] [--template settings.lys] [--no-braces]");
     eprintln!("  --template  take the printer, resins and settings from a scene saved in Lychee");
     eprintln!("  --no-braces leave CHITUBOX's braces out");
     std::process::exit(code)

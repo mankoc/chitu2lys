@@ -1,13 +1,13 @@
 # chitu2lys
 
-Converts a CHITUBOX project (`.chitubox`) into a Lychee Slicer scene (`.lys`).
+Converts a CHITUBOX project (`.chitubox`, or the newer `.ctp`) into a Lychee Slicer scene (`.lys`).
 
 This is a clean-room implementation of a converter from CHITUBOX to Lychee: it is written from the observed file
 formats alone, without using any code from CHITUBOX or Lychee Slicer. It is an independent project, not affiliated
 with or endorsed by either.
 
 ```text
-chitu2lys <project.chitubox> [scene.lys] [--template settings.lys] [--no-braces]
+chitu2lys <project.chitubox|project.ctp> [scene.lys] [--template settings.lys] [--no-braces]
 ```
 
 Without an output name, the scene is written next to the project with the `.lys` extension.
@@ -19,7 +19,7 @@ Without an output name, the scene is written next to the project with the `.lys`
 
 ### Window
 
-`chitu2lys-gui` does the same in a small window: drop `.chitubox` files on it (or *Add projects…*), choose where
+`chitu2lys-gui` does the same in a small window: drop `.chitubox` or `.ctp` files on it (or *Add projects…*), choose where
 the scenes go (next to each project, or a folder), optionally a `.lys` to take the printer from and whether to
 convert the braces, and press **Convert**. Each project shows how it went: the number of models and supports and how
 much of the support paths is drawn as in CHITUBOX, or why it failed. Projects can also be passed on the command line
@@ -55,6 +55,13 @@ The few tips whose path cannot be followed (they end at a joint without a column
 tip, on the plate or on the model. Lychee draws its own shapes for tips and pads and no joint balls. Models keep
 CHITUBOX's hollowing; Lychee's own hollowing and raft are left switched off.
 
+### `.ctp` projects
+
+Newer CHITUBOX versions save `.ctp` projects: the same models and support parts as `.chitubox`, in a newer layout
+(`docs/CTP_NOTES.md`). They convert the same way. Their supports carry no triangles, so foot pads cannot be
+measured; when a project has none (its supports end in foot cones on the plate), the Lychee supports get Lychee's
+default square pads (5 mm, 0.8 mm thick).
+
 ## Printer and settings
 
 A `.lys` file also holds the printer, resins and Lychee settings. They come from the built-in template
@@ -76,7 +83,8 @@ cargo test
 
 | File | What it does |
 |---|---|
-| `src/chitubox.rs` | Reads the project: objects, positions, model meshes, support parts and the preview (format in `docs/CHITUBOX_FILE_FORMAT.md`) |
+| `src/chitubox.rs` | Reads a `.chitubox` project: objects, positions, model meshes, support parts and the preview (format in `docs/CHITUBOX_FILE_FORMAT.md`) |
+| `src/ctp.rs` | Reads a `.ctp` project into the same objects and support parts (format in `docs/CTP_NOTES.md`) |
 | `src/trees.rs` | Rebuilds CHITUBOX's support trees as Lychee supports, branches and braces |
 | `src/ground.rs` | Finds where a loose tip's support lands, with a vertical ray cast against the model |
 | `src/convert.rs` | Builds the Lychee scene state from the records in `template/` |

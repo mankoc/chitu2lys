@@ -1,4 +1,4 @@
-//! Turning a CHITUBOX project into a Lychee scene state: one Lychee object per model, one editable Lychee support
+//! Turning a CHITUBOX project (`.chitubox` or `.ctp`) into a Lychee scene state: one Lychee object per model, one editable Lychee support
 //! per CHITUBOX top tip (planned in `trees.rs`) and one Lychee brace per CHITUBOX brace.
 
 use std::path::{Path, PathBuf};
@@ -8,6 +8,7 @@ use glam::DVec3;
 use serde_json::{Value, json};
 
 use crate::chitubox::{self, Part};
+use crate::ctp;
 use crate::ground::Ground;
 use crate::lys::{Member, mesh_bin, scene_bin};
 use crate::trees::{self, Base, Planned};
@@ -70,7 +71,8 @@ impl Report {
 /// Lychee braces when `options.braces` is set.
 pub fn convert(input: &Path, output: &Path, options: &Options) -> Result<Report, String> {
     let data = std::fs::read(input).map_err(|e| format!("cannot read {}: {e}", input.display()))?;
-    let (objects, skipped) = chitubox::objects(&data)?;
+    let is_ctp = ctp::is_ctp(&data);
+    let (objects, skipped) = if is_ctp { ctp::objects(&data)? } else { chitubox::objects(&data)? };
     let mut state = match &options.template {
         Some(path) => crate::lys::read_scene(path).map_err(|e| format!("template {}: {e}", path.display()))?,
         None => serde_json::from_str(SCENE).expect("built-in template"),
@@ -86,10 +88,11 @@ pub fn convert(input: &Path, output: &Path, options: &Options) -> Result<Report,
     let (mut object_ids, mut support_ids) = (Vec::new(), Vec::new());
     for (index, object) in objects.iter().enumerate() {
         let id = format!("o{}", index + 1);
-        let mesh = chitubox::mesh(&data, object.model);
+        let mesh = object.model.mesh(&data);
         let Some((lo, hi)) = mesh.bounds() else { continue };
         let size = DVec3::from_array(std::array::from_fn(|i| (hi[i] - lo[i]) as f64));
-        let hash = hash_hex(&data[object.model.0..object.model.0 + object.model.1]);
+        let model_bytes = object.model.bytes(&data);
+        let hash = hash_hex(model_bytes);
 
         // supports: CHITUBOX's trees rebuilt as trunks, branches and braces
         let parts = &object.parts[..];
@@ -151,7 +154,7 @@ pub fn convert(input: &Path, output: &Path, options: &Options) -> Result<Report,
                 "properties": {
                     "hash": hash,
                     "lyId": id,
-                    "size": object.model.1 as f64 / 1e6,
+                    "size": model_bytes.len() as f64 / 1e6,
                     "file": input.display().to_string(),
                     "absolute": input.display().to_string(),
                     "relative": "",
@@ -175,7 +178,8 @@ pub fn convert(input: &Path, output: &Path, options: &Options) -> Result<Report,
     state["supports"]["present"]["allIds"] = json!(support_ids.clone());
     state["supports"]["present"]["changedIds"] = json!(support_ids);
 
-    if let Some(png) = preview_png(&data) {
+    let preview = if is_ctp { ctp::preview(&data) } else { chitubox::preview(&data) };
+    if let Some(png) = preview.and_then(preview_png) {
         members.push(Member { name: "preview.png".into(), data: png });
     }
     members.push(Member { name: "scene.bin".into(), data: scene_bin(&state) });
@@ -197,7 +201,8 @@ struct Pad {
 }
 
 impl Pad {
-    /// Measure CHITUBOX's foot pads (part type 5) from their triangles; Lychee-like defaults without one.
+    /// Measure CHITUBOX's foot pads (part type 5) from their triangles; Lychee-like defaults without one (or
+    /// without its triangles, as in `.ctp` projects).
     fn of(data: &[u8], parts: &[Part]) -> Self {
         let measured = parts.iter().find(|p| p.kind == FOOT_PAD).and_then(|pad| {
             let mesh = chitubox::mesh(data, pad.mesh);
@@ -382,9 +387,8 @@ fn hash_hex(bytes: &[u8]) -> String {
     format!("{:016x}{:016x}", fnv(0xcbf2_9ce4_8422_2325), fnv(0x84222325_cbf29ce4))
 }
 
-/// The project's preview as a PNG, scaled down to at most `PREVIEW_SIZE` pixels.
-fn preview_png(data: &[u8]) -> Option<Vec<u8>> {
-    let (width, height, rgb) = chitubox::preview(data)?;
+/// The project's preview (width, height, RGB pixels) as a PNG, scaled down to at most `PREVIEW_SIZE` pixels.
+fn preview_png((width, height, rgb): (u32, u32, Vec<u8>)) -> Option<Vec<u8>> {
     let image = image::RgbImage::from_raw(width, height, rgb)?;
     let scale = (PREVIEW_SIZE as f64 / width.max(height) as f64).min(1.0);
     let (w, h) = (((width as f64 * scale) as u32).max(1), ((height as f64 * scale) as u32).max(1));

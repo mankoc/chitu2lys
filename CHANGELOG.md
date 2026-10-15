@@ -2,7 +2,17 @@
 
 All notable changes to chitu2lys, newest first.
 
-## Unreleased
+## 0.3.0 — 2026-10-15
+
+### Added
+- **`.ctp` projects** (the newer CHITUBOX project files) convert like `.chitubox` projects, from the command line
+  and in the window: models, places and lifts, the support trees, braces and the preview. Their supports carry
+  no triangles, so supports without foot pads get Lychee's default pads. The layout is in `docs/CTP_NOTES.md`.
+
+### Changed
+- Releases no longer include a macOS build (Windows and Linux only).
+
+## 0.2.0 — 2026-10-13
 
 ### Added
 - **chitu2lys**: converts a CHITUBOX project into a Lychee scene. Models keep their place and lift. CHITUBOX's
